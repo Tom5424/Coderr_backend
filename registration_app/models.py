@@ -1,9 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class CustomUser(models.Model):
-    username = models.CharField(max_length=10)
-    email = models.EmailField()
-    password = models.CharField(max_length=50)
-    repeated_password = models.CharField(max_length=50)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     type = models.CharField(max_length=20)
