@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from registration_app.models import CustomUser
 from django.contrib.auth.models import User
 
 
