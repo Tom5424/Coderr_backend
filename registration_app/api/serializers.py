@@ -7,8 +7,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
     class Meta:
-        model = CustomUser
-        fields = ["user", "type"]
+        model = User
+        fields = ["id", "username", "email"]
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -24,9 +24,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
     	    
     def validate(self, data):
         if data["password"] != data["repeated_password"]:
-            raise serializers.ValidationError({"Password": ["The Password dont match with repeated Password!"]})
+            raise serializers.ValidationError({"Password": ["Das Passwort stimmt nicht mit dem wiederholten Passwort überein!"]})
         elif User.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError({"Email": ["User with this Email already Exist!"]})
+            raise serializers.ValidationError({"Email": ["Ein nutzer mit dieser Email existiert bereits!"]})
         return data
         
 
