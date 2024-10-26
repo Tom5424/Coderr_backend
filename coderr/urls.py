@@ -23,4 +23,5 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("", include("registration_app.urls")),
     path("", include("login_app.urls")),
+    path("", include("profiles_app.urls")),
 ]

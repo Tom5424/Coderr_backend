@@ -1,18 +1,11 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-
-
-class CustomUserSerializer(serializers.ModelSerializer):
-
-
-    class Meta:
-        model = User
-        fields = ["id", "username", "email"]
+from registration_app.models import UserType
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
     repeated_password = serializers.CharField(write_only=True)
-    type = serializers.CharField(max_length=20)
+    type = serializers.ChoiceField(choices=UserType.type_choices)
 
 
     class Meta:
@@ -33,4 +26,5 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user = User(username=validated_data['username'], email=validated_data['email'])
         user.set_password(validated_data['password'])
         user.save()
-        return user
+        user_type = UserType.objects.create(user=user, type=validated_data["type"])
+        return user, user_type
