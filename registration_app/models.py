@@ -2,14 +2,21 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class UserType(models.Model):
+class CustomProfile(models.Model):
     type_choices = (
         ("business", "business"),
         ("customer", "customer"),
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    type = models.CharField(max_length=20, choices=type_choices, default="")
-
+    file = models.FileField(upload_to="uploads/", null=True)
+    location = models.CharField(max_length=20, default="Kein Standort angegeben")
+    tel = models.CharField(max_length=15, default="Keine tel angegeben")
+    description = models.CharField(max_length=200, default="Keine Beschreibung angegeben")
+    working_hours = models.CharField(max_length=10, default="Keine Verfügbarkeit angegeben") 
+    type = models.CharField(max_length=20, choices=type_choices, default="business")
+    email = models.EmailField()
+    uploaded_at = models.DateTimeField(auto_now_add=True, null=True)
+    
 
     def __str__(self):
         return self.type

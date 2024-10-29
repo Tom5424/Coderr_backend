@@ -11,7 +11,7 @@ from rest_framework.authtoken.models import Token
 def register_user(request):
    serializer = RegistrationSerializer(data=request.data)
    if serializer.is_valid():
-      saved_user, user_type= serializer.save()
+      saved_user = serializer.save()
       token, created = Token.objects.get_or_create(user=saved_user)
-      return Response(data={"token": token.key, "username": saved_user.username, "email": saved_user.email, "type": user_type.type, "user_id": saved_user.pk}, status=status.HTTP_200_OK)
+      return Response(data={"token": token.key, "username": saved_user.username, "email": saved_user.email, "user_id": saved_user.pk}, status=status.HTTP_200_OK)
    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

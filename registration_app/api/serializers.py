@@ -1,17 +1,17 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from registration_app.models import UserType
+from registration_app.models import CustomProfile
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
     repeated_password = serializers.CharField(write_only=True)
-    type = serializers.ChoiceField(choices=UserType.type_choices)
-
+    type = serializers.ChoiceField(choices=CustomProfile.type_choices)
+    
 
     class Meta:
         model = User
-        fields = ["username", "email", "password", "repeated_password", "type"]
-        extra_kwargs = {"password": {"write_only": True}}
+        fields = ["id", "username", "email", "password", "repeated_password", "type"]
 
     	    
     def validate(self, data):
@@ -26,5 +26,5 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user = User(username=validated_data['username'], email=validated_data['email'])
         user.set_password(validated_data['password'])
         user.save()
-        user_type = UserType.objects.create(user=user, type=validated_data["type"])
-        return user, user_type
+        CustomProfile.objects.create(user=user, type=validated_data["type"])
+        return user
