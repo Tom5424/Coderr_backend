@@ -14,8 +14,8 @@ class CustomProfile(models.Model):
     description = models.CharField(max_length=200, default="Keine Beschreibung angegeben")
     working_hours = models.CharField(max_length=10, default="Keine Verfügbarkeit angegeben") 
     type = models.CharField(max_length=20, choices=type_choices, default="business")
-    email = models.EmailField()
     uploaded_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
     
 
     def __str__(self):
