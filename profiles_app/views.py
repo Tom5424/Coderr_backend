@@ -7,14 +7,27 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-
-@api_view(["GET"])
+@api_view(["GET", "PATCH"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def get_business_or_customer_user_detail(request, pk):
+def get_or_update_business_or_customer_user_detail(request, pk):
    user = get_object_or_404(User, pk=pk)
+   if request.method == "GET":
+      return get_business_or_customer_user_detail(user)
+   if request.method == "PATCH":
+      return update_business_or_customer_user_detail(request, user)
+
+
+def get_business_or_customer_user_detail(user):
    serializer = UserSerializer(user)
    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+def update_business_or_customer_user_detail(request, user):
+   serializer = UserSerializer(user, data=request.data, partial=True)
+   if serializer.is_valid():
+      serializer.save()
+      return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
