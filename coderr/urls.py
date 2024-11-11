@@ -26,6 +26,7 @@ urlpatterns = [
     path("", include("registration_app.urls")),
     path("", include("login_app.urls")),
     path("", include("profiles_app.urls")),
+    path("", include("offers_app.urls")),
 ]
 
 
