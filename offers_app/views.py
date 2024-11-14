@@ -1,7 +1,5 @@
 from offers_app.api.serializers import OfferSerializer, OfferDetailSerializer
 from .models import Offer, OfferDetail
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
