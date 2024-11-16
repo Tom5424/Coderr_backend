@@ -8,7 +8,7 @@ class Offer(models.Model):
     image = models.FileField(upload_to="uploads/", null=True)
     description = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
     min_price = models.DecimalField(max_digits=20, decimal_places=2, null=True)
     min_delivery_time = models.IntegerField(null=True)
     

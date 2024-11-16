@@ -1,4 +1,5 @@
 from offers_app.api.serializers import OfferSerializer, OfferDetailSerializer
+from offers_app.api.pagination import OfferResultsSetPagination
 from .models import Offer, OfferDetail
 from rest_framework import status
 from rest_framework.response import Response
@@ -12,15 +13,17 @@ from rest_framework.permissions import IsAuthenticated
 @permission_classes([IsAuthenticated])
 def get_or_create_offers(request):
     if request.method == "GET":
-        return get_offers()
+        return get_offers(request)
     elif request.method == "POST":
         return create_offer(request)
 
 
-def get_offers():
+def get_offers(request):
     queryset = Offer.objects.all()
-    serializer = OfferSerializer(queryset, many=True)
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
+    paginator = OfferResultsSetPagination()
+    paginated_offers = paginator.paginate_queryset(queryset=queryset, request=request)
+    serializer = OfferSerializer(paginated_offers, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 
 def create_offer(request):
