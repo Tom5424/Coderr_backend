@@ -16,17 +16,18 @@ class OfferDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OfferDetail
-        fields = ["id", "offer", "title", "revisions", "delivery_time_in_days", "price", "features", "offer_type"]
+        fields = ["id", "title", "revisions", "delivery_time_in_days", "price", "features", "offer_type"]
 
 
 class OfferSerializer(serializers.ModelSerializer):
     details = OfferDetailSerializer(many=True, required=True)
-    user = UserSerializer(required=False)
+    user_details = UserSerializer(required=False)
+    user = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
 
 
     class Meta:
         model = Offer
-        fields = ["id", "title", "image", "description", "created_at", "updated_at", "min_price", "min_delivery_time", "details", "user"]
+        fields = ["id", "title", "image", "description", "created_at", "updated_at", "min_price", "min_delivery_time", "details", "user_details", "user"]
 
 
     def validate(self, data):
@@ -45,10 +46,10 @@ class OfferSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         offer_detail_datas = validated_data.pop('details')
-        user = self.context['request'].user
+        user_details = self.context['request'].user
         min_price = min(offer_detail_data["price"] for offer_detail_data in offer_detail_datas)
         min_delivery_time = min(offer_detail_data["delivery_time_in_days"] for offer_detail_data in offer_detail_datas)
-        offer = Offer.objects.create(user=user, min_price=min_price, min_delivery_time=min_delivery_time, **validated_data)
+        offer = Offer.objects.create(user_details=user_details, user=user_details, min_price=min_price, min_delivery_time=min_delivery_time, **validated_data)
         for offer_detail_data in offer_detail_datas:
             OfferDetail.objects.create(offer=offer, **offer_detail_data)
         return offer

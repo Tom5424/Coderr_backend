@@ -1,16 +1,19 @@
 from offers_app.api.serializers import OfferSerializer, OfferDetailSerializer
 from offers_app.api.pagination import OfferResultsSetPagination
+from offers_app.api.permissions import IsOwner
+from offers_app.api.filters import DeliveryTimeFilter, OrderingOffers, SearchOfferFilter
 from .models import Offer, OfferDetail
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 @api_view(["GET", "POST"])
 @authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated & IsOwner | IsAdminUser])
 def get_or_create_offers(request):
     if request.method == "GET":
         return get_offers(request)
@@ -20,10 +23,21 @@ def get_or_create_offers(request):
 
 def get_offers(request):
     queryset = Offer.objects.all()
+    ### Sets Filter for delivery time
+    delivery_time_filter = DeliveryTimeFilter()
+    queryset = delivery_time_filter.filter_queryset(request=request, queryset=queryset, view=None)
+    ### Sets Sorting Filter the price or for the creation
+    ordering_offers = OrderingOffers()
+    queryset = ordering_offers.get_ordering(request=request, queryset=queryset, view=None)
+    ### Sets the searchfilter
+    search_offer_filter = SearchOfferFilter()
+    search_fields = search_offer_filter.get_search_fields(view=None, request=request)
+    if len(search_fields) > 0: queryset = queryset.filter(Q(title__icontains=search_fields[0]) | Q(description__icontains=search_fields[0]))
+    ### Sets the pagination
     paginator = OfferResultsSetPagination()
     paginated_offers = paginator.paginate_queryset(queryset=queryset, request=request)
     serializer = OfferSerializer(paginated_offers, many=True)
-    return paginator.get_paginated_response(serializer.data)
+    return paginator.get_paginated_response(data=serializer.data)
 
 
 def create_offer(request):
@@ -36,7 +50,7 @@ def create_offer(request):
 
 @api_view(["GET", "PATCH", "DELETE"])
 @authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated & IsOwner | IsAdminUser])
 def get_or_update_or_delete_offer(request, pk):
     queryset = Offer.objects.get(pk=pk)
     if request.method == "GET":
