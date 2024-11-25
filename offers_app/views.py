@@ -24,15 +24,16 @@ def get_or_create_offers(request):
 def get_offers(request):
     queryset = Offer.objects.all()
     ### Sets Filter for delivery time
-    delivery_time_filter = DeliveryTimeFilter()
-    queryset = delivery_time_filter.filter_queryset(request=request, queryset=queryset, view=None)
+    delivery_time_filter = DeliveryTimeFilter(request.GET, queryset=queryset)
+    queryset = delivery_time_filter.qs
+    # queryset = delivery_time_filter.filter_queryset(request=request, queryset=queryset, view=None)
     ### Sets Sorting Filter the price or for the creation
-    ordering_offers = OrderingOffers()
-    queryset = ordering_offers.get_ordering(request=request, queryset=queryset, view=None)
+    # ordering_offers = OrderingOffers()
+    # queryset = ordering_offers.get_ordering(request=request, queryset=queryset, view=None)
     ### Sets the searchfilter
-    search_offer_filter = SearchOfferFilter()
-    search_fields = search_offer_filter.get_search_fields(view=None, request=request)
-    if len(search_fields) > 0: queryset = queryset.filter(Q(title__icontains=search_fields[0]) | Q(description__icontains=search_fields[0]))
+    # search_offer_filter = SearchOfferFilter()
+    # search_fields = search_offer_filter.get_search_fields(view=None, request=request)
+    # if len(search_fields) > 0: queryset = queryset.filter(Q(title__icontains=search_fields[0]) | Q(description__icontains=search_fields[0]))
     ### Sets the pagination
     paginator = OfferResultsSetPagination()
     paginated_offers = paginator.paginate_queryset(queryset=queryset, request=request)

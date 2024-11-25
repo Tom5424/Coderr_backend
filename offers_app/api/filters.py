@@ -1,15 +1,24 @@
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
+from django_filters import  FilterSet
+from offers_app.models import Offer
 
 
-class DeliveryTimeFilter(BaseFilterBackend):
+class DeliveryTimeFilter(FilterSet):
 
 
-    def filter_queryset(self, request, queryset, view):
-        max_delivery_time = request.query_params.get("max_delivery_time", None) or None
-        if max_delivery_time is not None:
-            max_delivery_time = int(max_delivery_time)
-            return queryset.filter(min_delivery_time__lte=max_delivery_time)
-        return queryset.all()
+    class Meta:
+        model = Offer
+        fields = {
+            "min_delivery_time": ["lte"]
+        }
+
+
+    # def filter_queryset(self, request, queryset, view):
+    #     max_delivery_time = request.query_params.get("max_delivery_time", None) or None
+    #     if max_delivery_time is not None:
+    #         max_delivery_time = int(max_delivery_time)
+    #         return queryset.filter(min_delivery_time__lte=max_delivery_time)
+    #     return queryset.all()
 
 
 class OrderingOffers(OrderingFilter):
