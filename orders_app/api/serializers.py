@@ -46,21 +46,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return order
     
 
-    # def update(self, instance, validated_data):
-    #     offer_detail_datas = validated_data.pop("details", [])
-    #     all_details = instance.details.all()
-    #     instance.image = validated_data.get("image", instance.image)
-    #     instance.title = validated_data.get("title", instance.title)
-    #     instance.description = validated_data.get("description", instance.description)
-    #     for index, offer_detail_data in enumerate(offer_detail_datas):
-    #         detail = all_details[index]
-    #         detail.title = offer_detail_data.get("title", detail.title) 
-    #         detail.price = offer_detail_data.get("price", detail.price) 
-    #         detail.delivery_time_in_days = offer_detail_data.get("delivery_time_in_days", detail.delivery_time_in_days)
-    #         instance.min_price = min(instance.min_price, detail.price)
-    #         instance.min_delivery_time = min(instance.min_delivery_time, detail.delivery_time_in_days)
-    #         detail.features = offer_detail_data.get("features", detail.features) 
-    #         detail.revisions = offer_detail_data.get("revisions", detail.revisions)
-    #         detail.save()
-    #     instance.save()
-    #     return instance
+    def update(self, instance, validated_data):
+        instance.status = validated_data.get("status", instance.status)
+        instance.save()
+        return instance
