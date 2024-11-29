@@ -63,3 +63,26 @@ def delete_single_order(request, queryset):
         queryset.delete()
         return Response({})
     return Response({"detail": ["Du bist nicht berechtigt dies zu tun!"]}, status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_orders_count_in_progress(request, business_user_id):
+    queryset = Order.objects.filter(Q(business_user=business_user_id) & Q(status="in_progress"))
+    serializer = OrderSerializer(queryset, many=True)
+    if queryset.exists():
+        return Response(data={"order_count": len(serializer.data)}) 
+    return Response({"error": ["Geschäftsbenutzer nicht gefunden."]}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_orders_count_completed(request, business_user_id):
+    queryset = Order.objects.filter(Q(business_user=business_user_id) & Q(status="completed"))
+    serializer = OrderSerializer(queryset, many=True)
+    if queryset.exists():
+        return Response(data={"completed_order_count": len(serializer.data)}) 
+    return Response({"error": ["Geschäftsbenutzer nicht gefunden."]}, status=status.HTTP_404_NOT_FOUND)
