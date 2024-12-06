@@ -23,8 +23,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
         
 
     def create(self, validated_data):
-        user = User(username=validated_data['username'], email=validated_data['email'])
-        user.set_password(validated_data['password'])
-        user.save()
-        CustomProfile.objects.create(user=user, type=validated_data["type"])
-        return user
+        single_user = User(username=validated_data['username'], email=validated_data['email'])
+        single_user.set_password(validated_data['password'])
+        single_user.save()
+        user = single_user.id
+        CustomProfile.objects.create(single_user=single_user, user=user, type=validated_data["type"])
+        return single_user

@@ -35,7 +35,7 @@ def update_business_or_customer_user_detail(request, user):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_business_users(request):
-   busines_users = User.objects.filter(customprofile__type="business")
+   busines_users = User.objects.filter(single_user__type="business")
    serializer = UserSerializer(busines_users, many=True)
    data = []
    for user in serializer.data:
@@ -57,7 +57,7 @@ def get_business_users(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_customer_users(request):
-   customer_users = User.objects.filter(customprofile__type="customer")
+   customer_users = User.objects.filter(single_user__type="customer")
    serializer = UserSerializer(customer_users, many=True)
    data = []
    for user in serializer.data:

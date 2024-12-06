@@ -3,19 +3,20 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
-    file = serializers.FileField(source="customprofile.file")
-    location = serializers.CharField(source="customprofile.location", allow_blank=True)
-    tel = serializers.CharField(source="customprofile.tel")
-    description = serializers.CharField(source="customprofile.description", allow_blank=True)
-    working_hours = serializers.CharField(source="customprofile.working_hours", allow_blank=True) 
-    type = serializers.CharField(source="customprofile.type")
-    uploaded_at = serializers.DateTimeField(source="customprofile.uploaded_at")
-    created_at = serializers.DateTimeField(source="customprofile.created_at")
+    user = serializers.IntegerField(source="single_user.user")
+    file = serializers.FileField(source="single_user.file")
+    location = serializers.CharField(source="single_user.location", allow_blank=True)
+    tel = serializers.CharField(source="single_user.tel")
+    description = serializers.CharField(source="single_user.description", allow_blank=True)
+    working_hours = serializers.CharField(source="single_user.working_hours", allow_blank=True) 
+    type = serializers.CharField(source="single_user.type")
+    uploaded_at = serializers.DateTimeField(source="single_user.uploaded_at")
+    created_at = serializers.DateTimeField(source="single_user.created_at")
 
 
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type", "email", "uploaded_at", "created_at"]
+        fields = ["id", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type", "email", "uploaded_at", "created_at", "user"]
     
 
     def validate(self, data):
@@ -33,12 +34,12 @@ class UserSerializer(serializers.ModelSerializer):
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
-        if validated_data.get("customprofile") is not None:
-           instance.customprofile.file = validated_data["customprofile"].get('file', instance.customprofile.file)
-           instance.customprofile.location = validated_data["customprofile"].get('location', instance.customprofile.location)
-           instance.customprofile.tel = validated_data["customprofile"].get('tel', instance.customprofile.tel)
-           instance.customprofile.description = validated_data["customprofile"].get('description', instance.customprofile.description)
-           instance.customprofile.working_hours = validated_data["customprofile"].get('working_hours', instance.customprofile.working_hours)
-           instance.customprofile.save()
+        if validated_data.get("single_user") is not None:
+           instance.single_user.file = validated_data["single_user"].get('file', instance.single_user.file)
+           instance.single_user.location = validated_data["single_user"].get('location', instance.single_user.location)
+           instance.single_user.tel = validated_data["single_user"].get('tel', instance.single_user.tel)
+           instance.single_user.description = validated_data["single_user"].get('description', instance.single_user.description)
+           instance.single_user.working_hours = validated_data["single_user"].get('working_hours', instance.single_user.working_hours)
+           instance.single_user.save()
         instance.save()
         return instance
