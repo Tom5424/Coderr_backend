@@ -26,7 +26,6 @@ class OfferDetail(models.Model):
     price = models.DecimalField(max_digits=20, decimal_places=2)
     features = models.JSONField(default=list)
     offer_type = models.CharField(max_length=20)
-    url = models.URLField()
 
 
     def __str__(self):

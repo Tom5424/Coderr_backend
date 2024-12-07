@@ -43,11 +43,12 @@ def get_offers(request):
 
 
 def create_offer(request):
+    user = request.user.single_user
     serializer = OfferSerializer(data=request.data, context={'request': request})
-    if serializer.is_valid():
+    if serializer.is_valid() and user.type == "business":
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
 
 @api_view(["GET", "PATCH", "DELETE"])
@@ -60,7 +61,7 @@ def get_or_update_or_delete_offer(request, pk):
     elif request.method == "PATCH":
         return update_single_offer(request, queryset)
     elif request.method == "DELETE":
-        return delete_single_offer(queryset)
+        return delete_single_offer(request, queryset)
 
 
 def get_single_offer(queryset): 
@@ -69,16 +70,20 @@ def get_single_offer(queryset):
 
 
 def update_single_offer(request, queryset):
+    user = request.user.single_user
     serializer = OfferSerializer(queryset, data=request.data, partial=True)
-    if serializer.is_valid():
+    if serializer.is_valid() and user.type == "business":
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
         
 
-def delete_single_offer(queryset):
-    queryset.delete()
-    return Response({})
+def delete_single_offer(request, queryset):
+    user = request.user.single_user
+    if user.type == "business":
+        queryset.delete()
+        return Response({})
+    return Response(status=status.HTTP_403_FORBIDDEN)    
 
 
 @api_view(["GET"])
