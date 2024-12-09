@@ -25,11 +25,12 @@ def get_orders(request):
 
 
 def create_order(request):
+    user = request.user.single_user
     serializer = OrderSerializer(data=request.data, context={"request": request})
-    if serializer.is_valid():
+    if serializer.is_valid() and user.type == "customer":
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
 
 @api_view(["GET", "PATCH", "DELETE"])
@@ -51,11 +52,12 @@ def get_single_order(queryset):
 
 
 def update_single_order_status(request, queryset):
+    user = request.user.single_user
     serializer = OrderSerializer(queryset, data=request.data, partial=True)
-    if serializer.is_valid():
+    if serializer.is_valid() and user.type == "business":
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
     
         
 def delete_single_order(request, queryset):

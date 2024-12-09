@@ -17,12 +17,19 @@ class OrderSerializer(serializers.ModelSerializer):
     status = serializers.CharField(max_length=20, required=False)
     created_at = serializers.DateTimeField(required=False)
     updated_at = serializers.DateTimeField(required=False)
-
+    
 
     class Meta:
         model = Order
         fields = ["id", "offer_detail_id", "customer_user", "business_user", "title", "revisions", "delivery_time_in_days", "price", "features", "offer_type", "status", "created_at", "updated_at"]
-    
+
+
+    def validate(self, data):
+        status = data.get("status", None)
+        if status is not None:
+            return data
+        raise serializers.ValidationError({"status": ["Es kann nur der Status geändert werden bzw. der Status muss enthalten sein!"]})
+
 
     def create(self, validated_data):
         offer_detail = validated_data["offer_detail_id"]
