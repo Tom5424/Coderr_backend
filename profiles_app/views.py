@@ -26,9 +26,10 @@ def get_business_or_customer_user_detail(user):
 
 def update_business_or_customer_user_detail(request, user):
    serializer = UserSerializer(user, data=request.data, partial=True)
-   if serializer.is_valid():
+   if serializer.is_valid() and (request.user.id == user.id or user.is_superuser):
       serializer.save()
       return Response(data=serializer.data, status=status.HTTP_200_OK)
+   return Response(data=serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
 
 @api_view(["GET"])

@@ -26,9 +26,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         status = data.get("status", None)
-        if status is not None:
-            return data
-        raise serializers.ValidationError({"status": ["Es kann nur der Status geändert werden bzw. der Status muss enthalten sein!"]})
+        if status is None:
+            raise serializers.ValidationError({"status": ["Der Status muss enthalten sein!"]})
+        if len(data) > 1:
+            raise serializers.ValidationError({"status": ["Es kann nur der Status geändert werden!"]})
+        return data
 
 
     def create(self, validated_data):
