@@ -29,11 +29,12 @@ def get_reviews(request):
 
 
 def create_review(request):
+    user = request.user.single_user
     serializer = ReviewSerializer(data=request.data, context={"request": request})
-    if serializer.is_valid():
+    if serializer.is_valid() and user.type == "customer":
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"error": ["Du bist nicht berechtigt dies zu tun!"]}, status=status.HTTP_403_FORBIDDEN)
 
 
 @api_view(["GET", "PATCH", "DELETE"])
@@ -55,17 +56,17 @@ def get_single_review(queryset):
 
 
 def update_single_review(request, queryset):
-    single_review = queryset.reviewer
+    reviewer = queryset.reviewer
     serializer = ReviewSerializer(queryset, data=request.data, partial=True)
-    if serializer.is_valid() and (request.user.id == single_review or request.user.is_staff):
+    if serializer.is_valid() and (request.user.id == reviewer or request.user.is_superuser):
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     return Response({"error": ["Du bist nicht berechtigt dies zu tun!"]}, status=status.HTTP_403_FORBIDDEN)
     
         
 def delete_single_review(request, queryset):
-    single_review = queryset.reviewer
-    if request.user.id == single_review or request.user.is_staff:
+    reviewer = queryset.reviewer
+    if request.user.id == reviewer or request.user.is_superuser:
         queryset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     return Response({"detail": ["Du bist nicht berechtigt dies zu tun!"]}, status=status.HTTP_403_FORBIDDEN)
