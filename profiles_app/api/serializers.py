@@ -1,12 +1,23 @@
+import re
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 from rest_framework import serializers
+
+
+def validate_tel(value):
+    if not value.startswith("+"):
+        value = f"+{value}"
+    regex = r"^\+[0-9]{1,15}$"
+    if re.fullmatch(regex, value) is None:
+        raise serializers.ValidationError("Die Telefonnummer muss mit einem '+' beginnen. Nur die Ziffern von 0-9 dürfen enthalten sein und maximal 15 Ziffern lang sein.")
+    return value
 
 
 class UserSerializer(serializers.ModelSerializer):
     user = serializers.IntegerField(source="single_user.user")
     file = serializers.FileField(source="single_user.file")
     location = serializers.CharField(source="single_user.location", allow_blank=True)
-    tel = serializers.CharField(source="single_user.tel")
+    tel = serializers.CharField(validators=[validate_tel], source="single_user.tel")
     description = serializers.CharField(source="single_user.description", allow_blank=True)
     working_hours = serializers.CharField(source="single_user.working_hours", allow_blank=True) 
     type = serializers.CharField(source="single_user.type")

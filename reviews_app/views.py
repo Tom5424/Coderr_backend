@@ -34,7 +34,7 @@ def create_review(request):
     if serializer.is_valid() and user.type == "customer":
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-    return Response({"error": ["Du bist nicht berechtigt dies zu tun!"]}, status=status.HTTP_403_FORBIDDEN)
+    return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
 
 
 @api_view(["GET", "PATCH", "DELETE"])
@@ -61,7 +61,7 @@ def update_single_review(request, queryset):
     if serializer.is_valid() and (request.user.id == reviewer or request.user.is_superuser):
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_200_OK)
-    return Response({"error": ["Du bist nicht berechtigt dies zu tun!"]}, status=status.HTTP_403_FORBIDDEN)
+    return Response(serializer.errors, status=status.HTTP_403_FORBIDDEN)
     
         
 def delete_single_review(request, queryset):
