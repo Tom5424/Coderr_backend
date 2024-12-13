@@ -32,8 +32,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         default_field_values = {'location': 'Kein Standort angegeben', 'description': 'Keine Beschreibung angegeben', 'working_hours': 'Keine Verfügbarkeit angegeben'}
-        if data.get("customprofile") is not None:
-            custom_profile_data = data["customprofile"]
+        if data.get("single_user") is not None:
+            custom_profile_data = data["single_user"]
             for field, default_field_value in default_field_values.items():
                 if field not in custom_profile_data or custom_profile_data[field] == "":
                     custom_profile_data[field] = default_field_value
