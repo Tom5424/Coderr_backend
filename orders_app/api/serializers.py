@@ -4,6 +4,13 @@ from django.utils import timezone
 from rest_framework import serializers
 
 
+def validate_status(data):
+        allowed_status = ("in_progress", "completed", "cancelled")
+        if data not in allowed_status:
+            raise serializers.ValidationError("Der Status muss enthalten sein!")
+        return data
+
+
 class OrderSerializer(serializers.ModelSerializer): 
     offer_detail_id = serializers.PrimaryKeyRelatedField(queryset=OfferDetail.objects.all())
     business_user = serializers.IntegerField(required=False)
@@ -14,7 +21,7 @@ class OrderSerializer(serializers.ModelSerializer):
     price = serializers.DecimalField(max_digits=20, decimal_places=2, required=False)
     features = serializers.ListField(child=serializers.CharField(), required=False)
     offer_type = serializers.CharField(max_length=20, required=False)
-    status = serializers.CharField(max_length=20, required=False)
+    status = serializers.CharField(validators=[validate_status], max_length=20, required=False)
     created_at = serializers.DateTimeField(required=False)
     updated_at = serializers.DateTimeField(required=False)
     
@@ -22,15 +29,6 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ["id", "offer_detail_id", "customer_user", "business_user", "title", "revisions", "delivery_time_in_days", "price", "features", "offer_type", "status", "created_at", "updated_at"]
-
-
-    def validate(self, data):
-        status = data.get("status", None)
-        if status is None:
-            raise serializers.ValidationError({"status": ["Der Status muss enthalten sein!"]})
-        if len(data) > 1:
-            raise serializers.ValidationError({"status": ["Es kann nur der Status geändert werden!"]})
-        return data
 
 
     def create(self, validated_data):
