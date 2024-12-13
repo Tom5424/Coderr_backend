@@ -32,7 +32,7 @@ class Command(BaseCommand):
             password = user.get("password")
             try:
                 test_user = User.objects.get(username=username, email=email)
-                last_login_was_more_than_ten_minutes_ago = datetime.datetime.now() - datetime.datetime.now(test_user.last_login) > datetime.timedelta(minutes=10)
+                last_login_was_more_than_ten_minutes_ago = timezone.now() - test_user.last_login > datetime.timedelta(minutes=10)
                 if test_user.last_login and last_login_was_more_than_ten_minutes_ago:
                     test_user.delete()
                     self.stdout.write(self.style.SUCCESS(f"User {test_user} deleted, last activity was more than 10 minutes ago"))
@@ -49,5 +49,5 @@ class Command(BaseCommand):
                 Token.objects.get_or_create(user=new_user)
                 self.stdout.write(self.style.SUCCESS(f"New User created: {new_user}"))
             except:    
-                new_user.last_login = timezone.now()
+                user["last_login"] = timezone.now()
                 self.stdout.write(self.style.WARNING(f"The User {user["username"]} already exist!"))
