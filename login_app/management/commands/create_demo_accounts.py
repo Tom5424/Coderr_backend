@@ -24,16 +24,14 @@ class Command(BaseCommand):
             {"username": kwargs["username_1"], "email": kwargs["email_1"], "password": kwargs["password_1"]},
             {"username": kwargs["username_2"], "email": kwargs["email_2"], "password": kwargs["password_2"]},
         ]
-        
 
-        # Schritt 1: Überprüfen und Löschen des Users
+
         for user in users:
             username = user.get("username")
             email = user.get("email")
             password = user.get("password")
             try:
                 test_user = User.objects.get(username=username, email=email)
-                # Wenn der letzte Login mehr als 10 Minuten her ist, löschen
                 last_login_was_more_than_ten_minutes_ago = datetime.datetime.now() - datetime.datetime.now(test_user.last_login) > datetime.timedelta(minutes=10)
                 if test_user.last_login and last_login_was_more_than_ten_minutes_ago:
                     test_user.delete()
@@ -42,7 +40,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f"No User with the name {username} found. Create new User!"))
 
 
-        # Schritt 2: Neuen User anlegen
             try:
                 new_user = User.objects.create_user(username=username, email=email)
                 new_user.set_password(password)
